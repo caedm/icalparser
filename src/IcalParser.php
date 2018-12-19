@@ -10,6 +10,9 @@ class IcalParser {
 
 	/** @var \DateTimeZone */
 	public $timezone;
+	
+	// Added by CAEDM
+	public $ical_calendar_name;
 
 	/** @var array */
 	public $data = [];
@@ -73,7 +76,8 @@ class IcalParser {
 
 		// Unfold multi-line strings
 		$string = str_replace("\n ", '', $string);
-
+		
+		
 		foreach (explode("\n", $string) as $row) {
 
 			switch ($row) {
@@ -173,6 +177,11 @@ class IcalParser {
 			$value = $matches[3];
 			$timezone = null;
 
+			// Added by CAEDM
+			if ($key === 'X-WR-CALNAME') {
+				$this->ical_calendar_name = $value;
+			}
+
 			if ($key === 'X-WR-TIMEZONE' || $key === 'TZID') {
 				if (preg_match('#(\w+/\w+)$#i', $value, $matches)) {
 					$value = $matches[1];
@@ -250,7 +259,7 @@ class IcalParser {
 		$text_properties = [
 			'CALSCALE', 'METHOD', 'PRODID', 'VERSION', 'CATEGORIES', 'CLASS', 'COMMENT', 'DESCRIPTION'
 			, 'LOCATION', 'RESOURCES', 'STATUS', 'SUMMARY', 'TRANSP', 'TZID', 'TZNAME', 'CONTACT', 'RELATED-TO', 'UID'
-			, 'ACTION', 'REQUEST-STATUS'
+			, 'ACTION', 'REQUEST-STATUS' 
 		];
 		if (in_array($key, $text_properties) || strpos($key, 'X-') === 0) {
 			if (is_array($value)) {
@@ -467,5 +476,8 @@ class IcalParser {
 		}
 		return [];
 	}
-
+	// Added by CAEDM
+	public function getiCalName(){
+		return $this->ical_calendar_name;
+	}
 }
